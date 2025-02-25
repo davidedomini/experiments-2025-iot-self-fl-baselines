@@ -5,7 +5,7 @@ ENV DATA_DIR=/data
 WORKDIR /experiment
 COPY requirements.txt /experiment
 RUN python3 -m pip install -r requirements.txt
-COPY . /experiment
+COPY docker /experiment
 ENV OWNER=1000:1000
 CMD export OUTPUT_DIR=$DATA_DIR/$(date +%Y-%m-%d-%H-%M-%S)-$(hostname) && \
     mkdir -p $OUTPUT_DIR && \
