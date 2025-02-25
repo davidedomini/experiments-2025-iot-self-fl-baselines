@@ -2,7 +2,7 @@ services:
 
   experiment-fedproxy:
     hostname: fedproxy
-    image: davidedomini/experiments-2025-iot-self-fl:latest
+    image: davidedomini99/experiments-2025-iot-self-fl:latest
     volumes:
       - davide.domini-volume:/data
     environment:
@@ -13,7 +13,7 @@ services:
 
   experiment-scaffold:
     hostname: scaffold
-    image: davidedomini/experiments-2025-iot-self-fl:latest
+    image: davidedomini99/experiments-2025-iot-self-fl:latest
     volumes:
       - davide.domini-volume:/data
     environment:
