@@ -2,9 +2,7 @@ services:
 
   experiment-fedproxy:
     hostname: fedproxy
-    build:
-      dockerfile: ./docker/Dockerfile
-      context: .
+    image: davidedomini/experiments-2025-iot-self-fl:latest
     volumes:
       - ./davide.domini-volume:/data
     environment:
@@ -15,9 +13,7 @@ services:
 
   experiment-scaffold:
     hostname: scaffold
-    build:
-      dockerfile: ./docker/Dockerfile
-      context: .
+    image: davidedomini/experiments-2025-iot-self-fl:latest
     volumes:
       - ./davide.domini-volume:/data
     environment:
