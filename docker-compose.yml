@@ -1,21 +1,17 @@
 services:
 
-  experiment-fedavg:
-    hostname: fedavg
+  experiment-fedproxy:
+    hostname: fedproxy
     build:
       dockerfile: ./docker/Dockerfile
       context: .
     volumes:
-      - ./data:/data
+      - ./davide.domini-volume:/data
     environment:
       DATA_OWNER: 1000:1000
       LEARNING_HYPERPARAMETERS: |
-        FedAvg: 
-          partitioning: [Hard, Dirichlet, IID]
+        fedproxy: 
           areas: [3, 5, 9]
-          seed: [0, 1, 2, 3, 4, 5]
-          dataset: [MNIST]
-          clients: [10]
 
   experiment-scaffold:
     hostname: scaffold
@@ -23,29 +19,9 @@ services:
       dockerfile: ./docker/Dockerfile
       context: .
     volumes:
-      - ./data:/data
+      - ./davide.domini-volume:/data
     environment:
       DATA_OWNER: 1000:1000
       LEARNING_HYPERPARAMETERS: |
-        Scaffold: 
-          partitioning: [Hard, Dirichlet, IID]
+        scaffold: 
           areas: [3, 5, 9]
-          seed: [0, 1, 2, 3, 4, 5]
-          dataset: [MNIST]
-          clients: [10]
-
-#  experiment-fedproxy:
-#    hostname: fedproxy
-#    build:
-#      dockerfile: ./docker/Dockerfile
-#      context: .
-#    volumes:
-#      - ./data:/data
-#    environment:
-#      DATA_OWNER: 1000:1000
-#      LEARNING_HYPERPARAMETERS: |
-#        kNNAveraging:
-#          agents: [4, 8, 12]
-#          neighbors: [1, 3, 5]
-#          visible_items: [3, 5]
-#          seed: { min: 0, max: 5, step: 1 }
