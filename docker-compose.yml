@@ -4,7 +4,7 @@ services:
     hostname: fedproxy
     image: davidedomini/experiments-2025-iot-self-fl:latest
     volumes:
-      - ./davide.domini-volume:/data
+      - davide.domini-volume:/data
     environment:
       DATA_OWNER: 1000:1000
       LEARNING_HYPERPARAMETERS: |
@@ -15,9 +15,14 @@ services:
     hostname: scaffold
     image: davidedomini/experiments-2025-iot-self-fl:latest
     volumes:
-      - ./davide.domini-volume:/data
+      - davide.domini-volume:/data
     environment:
       DATA_OWNER: 1000:1000
       LEARNING_HYPERPARAMETERS: |
         scaffold: 
           areas: [3, 5, 9]
+
+
+volumes:
+  davide.domini-volume:
+    external: true
