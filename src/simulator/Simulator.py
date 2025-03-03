@@ -131,7 +131,7 @@ class Simulator:
             raise Exception(f'Partitioning {self.partitioning} not supported! Please check :)')
         mapping_client_data = self.__map_client_to_data(mapping_area_clients, distribution_per_area)
         if self.algorithm == 'ifca':
-            mapping = utils.hard_non_iid_mapping(self.areas, len(self.validation_data.classes))
+            mapping = utils.hard_non_iid_mapping(self.areas, len(self.complete_dataset.classes))
             distribution_per_area = utils.partitioning(mapping, self.validation_data)
             self.mapping_client_data_validation = self.__map_client_to_data(mapping_area_clients, distribution_per_area)
         return mapping_client_data
