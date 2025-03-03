@@ -1,17 +1,28 @@
 services:
 
-  experiment-fedproxy:
-    hostname: fedproxy
-    image: davidedomini99/experiments-2025-iot-self-fl:latest
-    volumes:
-      - davide.domini-volume:/data
-    environment:
-      DATA_OWNER: 1000:1000
-      LEARNING_HYPERPARAMETERS: |
-        fedproxy: 
-          areas: [3, 5, 9]
+#  experiment-fedproxy:
+#    hostname: fedproxy
+#    image: davidedomini99/experiments-2025-iot-self-fl:latest
+#    volumes:
+#      - davide.domini-volume:/data
+#    environment:
+#      DATA_OWNER: 1000:1000
+#      LEARNING_HYPERPARAMETERS: |
+#        fedproxy:
+#          areas: [3, 5, 9]
+#
+#  experiment-scaffold:
+#    hostname: scaffold
+#    image: davidedomini99/experiments-2025-iot-self-fl:latest
+#    volumes:
+#      - davide.domini-volume:/data
+#    environment:
+#      DATA_OWNER: 1000:1000
+#      LEARNING_HYPERPARAMETERS: |
+#        scaffold:
+#          areas: [3, 5, 9]
 
-  experiment-scaffold:
+  experiment-ifca:
     hostname: scaffold
     image: davidedomini99/experiments-2025-iot-self-fl:latest
     volumes:
@@ -19,9 +30,8 @@ services:
     environment:
       DATA_OWNER: 1000:1000
       LEARNING_HYPERPARAMETERS: |
-        scaffold: 
+        ifca: 
           areas: [3, 5, 9]
-
 
 volumes:
   davide.domini-volume:
