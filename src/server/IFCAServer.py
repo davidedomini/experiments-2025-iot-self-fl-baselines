@@ -21,7 +21,8 @@ class IFCAServer:
 
         # Aggregate models that are inside the same cluster
         for cluster_id, models in cluster_to_models.items():
-            new_weights = self.__aggregate_inside_cluster(models)
+            model_weights = [m.state_dict() for m in models]
+            new_weights = self.__aggregate_inside_cluster(model_weights)
             self._models[cluster_id].load_state_dict(new_weights)
 
     def receive_client_update(self, client_data):
