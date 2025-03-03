@@ -31,6 +31,7 @@ class Simulator:
         self.clients = self.initialize_clients()
         self.server = self.initialize_server()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.mapping_client_data_validation = {}
 
     def seed_everything(self, seed):
         random.seed(seed)
@@ -128,6 +129,14 @@ class Simulator:
             self.save_distribution_heatmap(distribution_per_area)
         else:
             raise Exception(f'Partitioning {self.partitioning} not supported! Please check :)')
+        mapping_client_data = self.__map_client_to_data(mapping_area_clients, distribution_per_area)
+        if self.algorithm == 'ifca':
+            mapping = utils.hard_non_iid_mapping(self.areas, len(self.validation_data.classes))
+            distribution_per_area = utils.partitioning(mapping, self.validation_data)
+            self.mapping_client_data_validation = self.__map_client_to_data(mapping_area_clients, distribution_per_area)
+        return mapping_client_data
+
+    def __map_client_to_data(self, mapping_area_clients, distribution_per_area):
         mapping_client_data = {}
         for area in mapping_area_clients.keys():
             clients = mapping_area_clients[area]
@@ -139,18 +148,39 @@ class Simulator:
         return mapping_client_data
 
     def test_global_model(self, validation = True):
-        model = self.server.model
-        if validation:
-            dataset = self.validation_data
+        if self.algorithm == 'ifca':
+            if validation:
+                mapping_client = self.mapping_client_data_validation
+            else:
+                dataset = self.get_dataset(False)
+                clients_split = np.array_split(list(range(self.n_clients)), self.areas)
+                mapping_area_clients = {areaId: list(clients_split[areaId]) for areaId in range(self.areas)}
+                mapping = utils.hard_non_iid_mapping(self.areas, len(dataset.classes))
+                distribution_per_area = utils.partitioning(mapping, dataset)
+                mapping_client = self.__map_client_to_data(mapping_area_clients,distribution_per_area)
+
+            for index, client in enumerate(self.clients):
+                _, model = client.model
+                loss, accuracy = utils.test_model(model, mapping_client[index], self.batch_size, self.device)
+                # if validation:
+                #     print(f'Validation ----> loss: {loss}   accuracy: {accuracy}')
+                if not validation:
+                    data = pd.DataFrame({'Loss': [loss], 'Accuracy': [accuracy]})
+                    data.to_csv(f'{self.export_path}-test.csv', index=False)
+                return loss, accuracy
         else:
-            dataset = self.get_dataset(False)
-        loss, accuracy = utils.test_model(model, dataset, self.batch_size, self.device)
-        # if validation:
-        #     print(f'Validation ----> loss: {loss}   accuracy: {accuracy}')
-        if not validation:
-            data = pd.DataFrame({'Loss': [loss], 'Accuracy': [accuracy]})
-            data.to_csv(f'{self.export_path}-test.csv', index=False)
-        return loss, accuracy
+            model = self.server.model
+            if validation:
+                dataset = self.validation_data
+            else:
+                dataset = self.get_dataset(False)
+            loss, accuracy = utils.test_model(model, dataset, self.batch_size, self.device)
+            # if validation:
+            #     print(f'Validation ----> loss: {loss}   accuracy: {accuracy}')
+            if not validation:
+                data = pd.DataFrame({'Loss': [loss], 'Accuracy': [accuracy]})
+                data.to_csv(f'{self.export_path}-test.csv', index=False)
+            return loss, accuracy
 
     def get_dataset(self, train = True):
         transform = transforms.Compose([transforms.ToTensor()])
