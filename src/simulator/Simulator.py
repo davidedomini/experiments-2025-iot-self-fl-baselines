@@ -14,7 +14,7 @@ from torch.utils.data import Subset, random_split
 
 class Simulator:
 
-    def __init__(self, algorithm, partitioning, areas, dataset_name, n_clients, batch_size, local_epochs, data_folder, seed):
+    def __init__(self, algorithm, partitioning, areas, dataset_name, n_clients, batch_size, local_epochs, data_folder, seed, number_of_clusters = 0):
         self.batch_size = batch_size
         self.local_epochs = local_epochs
         self.dataset_name = dataset_name
@@ -28,6 +28,7 @@ class Simulator:
         self.clients = self.initialize_clients()
         self.server = self.initialize_server()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.number_of_clusters = number_of_clusters
 
     def seed_everything(self, seed):
         random.seed(seed)
@@ -57,6 +58,8 @@ class Simulator:
             return [ScaffoldClient(index, self.dataset_name, client_data_mapping[index], self.batch_size, self.local_epochs) for index in range(self.n_clients)]
         elif self.algorithm == 'fedproxy':
             return [FedProxyClient(index, self.dataset_name, client_data_mapping[index], self.batch_size, self.local_epochs) for index in range(self.n_clients)]
+        elif self.algorithm == 'ifca':
+            return [IFCAClient(index, self.dataset_name, client_data_mapping[index], self.batch_size, self.local_epochs) for index in range(self.n_clients)]
         else:
             raise Exception(f'Algorithm {self.algorithm} not supported! Please check :)')
 
@@ -65,15 +68,19 @@ class Simulator:
             return FedAvgServer(self.dataset_name)
         elif self.algorithm == 'scaffold':
             return ScaffoldServer(self.dataset_name)
+        elif self.algorithm == 'ifca':
+            return IFCAServer(self.dataset_name, self.number_of_clusters)
         else:
             raise Exception(f'Algorithm {self.algorithm} not supported! Please check :)')
 
     def notify_clients(self):
         for client in self.clients:
-            if self.algorithm == 'fedavg' or self.algorithm == 'fedproxy':
+            if self.algorithm == 'fedavg' or self.algorithm == 'fedproxy' or self.algorithm == 'ifca':
                 client.notify_updates(self.server.model)
             elif self.algorithm == 'scaffold':
                 client.notify_updates(self.server.model, self.server.control_state)
+            else:
+                raise Exception(f'Algorithm {self.algorithm} not supported! Please check :)')
 
     def clients_update(self):
         training_losses = []
@@ -86,10 +93,12 @@ class Simulator:
     def notify_server(self):
         client_data = {}
         for index, client in enumerate(self.clients):
-            if self.algorithm == 'fedavg' or self.algorithm =='fedproxy':
+            if self.algorithm == 'fedavg' or self.algorithm =='fedproxy' or self.algorithm == 'ifca':
                 client_data[index] = client.model
             elif self.algorithm == 'scaffold':
                 client_data[index] = { 'model': client.model, 'client_control_state': client.client_control_state }
+            else:
+                raise Exception(f'Algorithm {self.algorithm} not supported! Please check :)')
         self.server.receive_client_update(client_data)
 
     def server_update(self):
