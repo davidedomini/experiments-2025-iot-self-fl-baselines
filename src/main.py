@@ -57,6 +57,6 @@ if __name__ == '__main__':
         for dataset in ['EMNIST']:
             for area in areas:
                 print(f'starting hard seed {seed} experiment {experiment_name} dataset {dataset} area {area}')
-                simulator = Simulator(experiment_name, partitioning, area, dataset, clients, batch_size, local_epochs, data_dir, seed)
+                simulator = Simulator(experiment_name, partitioning, area, dataset, clients, batch_size, local_epochs, data_dir, seed, number_of_clusters=areas)
                 simulator.seed_everything(seed)
                 simulator.start(global_rounds)
