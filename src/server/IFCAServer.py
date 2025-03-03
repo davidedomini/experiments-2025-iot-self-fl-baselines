@@ -14,7 +14,7 @@ class IFCAServer:
         # Find models for each cluster
         cluster_to_models = {}
         for _, (cluster_id, model) in self.clients_data.items():
-            if cluster_to_models[cluster_id]:
+            if cluster_id in cluster_to_models:
                 cluster_to_models[cluster_id].append(model)
             else:
                 cluster_to_models[cluster_id] = [model]
