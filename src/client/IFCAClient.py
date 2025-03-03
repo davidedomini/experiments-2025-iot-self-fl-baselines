@@ -8,8 +8,10 @@ class IFCAClient:
 
     def __init__(self, mid, dataset_name, dataset, batch_size, epochs):
         self.mid = mid
+        self.lr = 0.001
         self.epochs = epochs
         self.dataset = dataset
+        self.weight_decay = 1e-4
         self.batch_size = batch_size
         self.dataset_name = dataset_name
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -19,7 +21,7 @@ class IFCAClient:
     def train(self):
         self.current_cluster_id = self.__find_cluster()
         model = self._global_models[self.current_cluster_id]
-        train_loader = DataLoader(self.training_set, batch_size=self.batch_size, shuffle=True)
+        train_loader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True)
         optimizer = torch.optim.Adam(model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         loss_func = nn.CrossEntropyLoss()
         losses = []
@@ -50,7 +52,7 @@ class IFCAClient:
         for global_model in self._global_models:
             loss, _ = test_model(global_model, self.dataset, self.batch_size, self.device)
             losses.append(loss)
-        cluster_id, _ = min(enumerate(numeri), key=lambda x: x[1])
+        cluster_id, _ = min(enumerate(losses), key=lambda x: x[1])
         return cluster_id
 
     @property

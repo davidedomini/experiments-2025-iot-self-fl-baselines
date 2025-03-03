@@ -7,9 +7,11 @@ from collections import Counter
 from torchvision import datasets, transforms
 from client.FedAvgClient import FedAvgClient
 from client.FedProxyClient import FedProxyClient
+from client.IFCAClient import IFCAClient
 from server.FedAvgServer import FedAvgServer
 from client.ScaffoldClient import ScaffoldClient
 from server.ScaffoldServer import ScaffoldServer
+from server.IFCAServer import IFCAServer
 from torch.utils.data import Subset, random_split
 
 class Simulator:
@@ -18,6 +20,7 @@ class Simulator:
         self.batch_size = batch_size
         self.local_epochs = local_epochs
         self.dataset_name = dataset_name
+        self.number_of_clusters = number_of_clusters
         self.complete_dataset, self.training_data, self.validation_data = self.initialize_data()
         self.partitioning = partitioning
         self.algorithm = algorithm
@@ -28,7 +31,6 @@ class Simulator:
         self.clients = self.initialize_clients()
         self.server = self.initialize_server()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.number_of_clusters = number_of_clusters
 
     def seed_everything(self, seed):
         random.seed(seed)

@@ -1,9 +1,6 @@
 import copy
 from utils.FedUtils import *
 
-from src.utils.FedUtils import initialize_model
-
-
 class IFCAServer:
 
     def __init__(self, dataset_name, number_of_clusters):
