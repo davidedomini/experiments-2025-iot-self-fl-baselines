@@ -49,10 +49,8 @@ class Simulator:
             training_loss = self.clients_update()
             self.notify_server()
             self.server_update()
-            print('diocane validation')
             validation_loss, validation_accuracy = self.test_global_model()
             self.export_data(r, training_loss, validation_loss, validation_accuracy)
-        print('madonna troia test')
         self.test_global_model(False)
         self.save_data()
 
@@ -137,7 +135,6 @@ class Simulator:
             mapping = utils.hard_non_iid_mapping(self.areas, len(self.complete_dataset.classes))
             distribution_per_area = utils.partitioning(mapping, self.validation_data)
             self.mapping_client_data_validation = self.__map_client_to_data(mapping_area_clients, distribution_per_area)
-            print(self.mapping_client_data_validation)
         return mapping_client_data
 
     def __map_client_to_data(self, mapping_area_clients, distribution_per_area):
@@ -154,11 +151,7 @@ class Simulator:
     def test_global_model(self, validation = True):
         if self.algorithm == 'ifca':
             if validation:
-                print('madonnina troiettina')
                 mapping_client = self.mapping_client_data_validation
-                print(self.mapping_client_data_validation)
-                print(self.mapping_client_data_validation.keys())
-                print(mapping_client.keys())
             else:
                 dataset = self.get_dataset(False)
                 clients_split = np.array_split(list(range(self.n_clients)), self.areas)
@@ -169,7 +162,6 @@ class Simulator:
 
             for index, client in enumerate(self.clients):
                 _, model = client.model
-                print(mapping_client.keys())
                 loss, accuracy = utils.test_model(model, mapping_client[index], self.batch_size, self.device)
                 # if validation:
                 #     print(f'Validation ----> loss: {loss}   accuracy: {accuracy}')
