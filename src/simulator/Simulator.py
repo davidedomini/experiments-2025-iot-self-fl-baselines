@@ -17,6 +17,7 @@ from torch.utils.data import Subset, random_split
 class Simulator:
 
     def __init__(self, algorithm, partitioning, areas, dataset_name, n_clients, batch_size, local_epochs, data_folder, seed, number_of_clusters = 0):
+        self.mapping_client_data_validation = {}
         self.batch_size = batch_size
         self.local_epochs = local_epochs
         self.dataset_name = dataset_name
@@ -31,7 +32,7 @@ class Simulator:
         self.clients = self.initialize_clients()
         self.server = self.initialize_server()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.mapping_client_data_validation = {}
+
 
     def seed_everything(self, seed):
         random.seed(seed)
@@ -48,8 +49,10 @@ class Simulator:
             training_loss = self.clients_update()
             self.notify_server()
             self.server_update()
+            print('diocane validation')
             validation_loss, validation_accuracy = self.test_global_model()
             self.export_data(r, training_loss, validation_loss, validation_accuracy)
+        print('madonna troia test')
         self.test_global_model(False)
         self.save_data()
 
@@ -134,6 +137,7 @@ class Simulator:
             mapping = utils.hard_non_iid_mapping(self.areas, len(self.complete_dataset.classes))
             distribution_per_area = utils.partitioning(mapping, self.validation_data)
             self.mapping_client_data_validation = self.__map_client_to_data(mapping_area_clients, distribution_per_area)
+            print(self.mapping_client_data_validation)
         return mapping_client_data
 
     def __map_client_to_data(self, mapping_area_clients, distribution_per_area):
@@ -150,7 +154,11 @@ class Simulator:
     def test_global_model(self, validation = True):
         if self.algorithm == 'ifca':
             if validation:
+                print('madonnina troiettina')
                 mapping_client = self.mapping_client_data_validation
+                print(self.mapping_client_data_validation)
+                print(self.mapping_client_data_validation.keys())
+                print(mapping_client.keys())
             else:
                 dataset = self.get_dataset(False)
                 clients_split = np.array_split(list(range(self.n_clients)), self.areas)
@@ -161,6 +169,7 @@ class Simulator:
 
             for index, client in enumerate(self.clients):
                 _, model = client.model
+                print(mapping_client.keys())
                 loss, accuracy = utils.test_model(model, mapping_client[index], self.batch_size, self.device)
                 # if validation:
                 #     print(f'Validation ----> loss: {loss}   accuracy: {accuracy}')
