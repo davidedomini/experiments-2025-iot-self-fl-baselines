@@ -157,18 +157,24 @@ class Simulator:
                 clients_split = np.array_split(list(range(self.n_clients)), self.areas)
                 mapping_area_clients = {areaId: list(clients_split[areaId]) for areaId in range(self.areas)}
                 mapping = utils.hard_non_iid_mapping(self.areas, len(dataset.classes))
-                distribution_per_area = utils.partitioning(mapping, dataset)
+                distribution_per_area = utils.partitioning(mapping, dataset, True)
                 mapping_client = self.__map_client_to_data(mapping_area_clients,distribution_per_area)
 
+            losses = []
+            accuracies = []
             for index, client in enumerate(self.clients):
                 _, model = client.model
-                loss, accuracy = utils.test_model(model, mapping_client[index], self.batch_size, self.device)
+                client_loss, client_accuracy = utils.test_model(model, mapping_client[index], self.batch_size, self.device)
                 # if validation:
                 #     print(f'Validation ----> loss: {loss}   accuracy: {accuracy}')
-                if not validation:
-                    data = pd.DataFrame({'Loss': [loss], 'Accuracy': [accuracy]})
-                    data.to_csv(f'{self.export_path}-test.csv', index=False)
-                return loss, accuracy
+                losses.append(client_loss)
+                accuracies.append(client_accuracy)
+            loss = sum(losses) / len(losses)
+            accuracy = sum(accuracies) / len(accuracies)
+            if not validation:
+                data = pd.DataFrame({'Loss': [loss], 'Accuracy': [accuracy]})
+                data.to_csv(f'{self.export_path}-test.csv', index=False)
+            return loss, accuracy
         else:
             model = self.server.model
             if validation:
