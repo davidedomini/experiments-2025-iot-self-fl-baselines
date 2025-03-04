@@ -23,7 +23,7 @@ services:
 #          areas: [3, 5, 9]
 
   experiment-ifca:
-    hostname: scaffold
+    hostname: ifca
     image: davidedomini99/experiments-2025-iot-self-fl:1.0.6
     volumes:
       - davide.domini-volume:/data
