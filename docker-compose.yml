@@ -24,7 +24,7 @@ services:
 
   experiment-ifca:
     hostname: ifca
-    image: davidedomini99/experiments-2025-iot-self-fl:1.0.7
+    image: davidedomini99/experiments-2025-iot-self-fl:1.0.8
     volumes:
       - davide.domini-volume:/data
     environment:
