@@ -11,28 +11,30 @@ class IFCAClient:
         self.lr = 0.001
         self.epochs = epochs
         self.dataset = dataset
+        self._global_models = []
         self.weight_decay = 1e-4
+        self.current_cluster_id = 0
         self.batch_size = batch_size
         self.dataset_name = dataset_name
+        self._model = initialize_model(dataset_name)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self._global_models = []
-        self.current_cluster_id = 0
+        
 
     def train(self):
         self.current_cluster_id = self.__find_cluster()
-        model = self._global_models[self.current_cluster_id]
+        self._model.load_state_dict(self._global_models[self.current_cluster_id].state_dict())
         train_loader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True)
-        optimizer = torch.optim.Adam(model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
+        optimizer = torch.optim.Adam(self._model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         loss_func = nn.CrossEntropyLoss()
         losses = []
-        model.to(self.device)
+        self._model.to(self.device)
         for _ in range(self.epochs):
             batch_losses = []
             for step, (images, labels) in enumerate(train_loader):
                 images, labels = images.to(self.device), labels.to(self.device)
                 with torch.enable_grad():
-                    model.train()
-                    outputs = model(images)
+                    self._model.train()
+                    outputs = self._model(images)
                     loss = loss_func(outputs, labels)
                     optimizer.zero_grad()
                     loss.backward()
@@ -43,6 +45,7 @@ class IFCAClient:
         return sum(losses) / len(losses)
 
     def notify_updates(self, global_models):
+        self._global_models = []
         for global_model in global_models:
             fresh_model = copy.deepcopy(global_model)
             self._global_models.append(fresh_model)
@@ -57,4 +60,4 @@ class IFCAClient:
 
     @property
     def model(self):
-        return self.current_cluster_id, self._global_models[self.current_cluster_id]
+        return self.current_cluster_id, self._model
