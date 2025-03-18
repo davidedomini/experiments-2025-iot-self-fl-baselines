@@ -33,7 +33,6 @@ class Simulator:
         self.server = self.initialize_server()
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-
     def seed_everything(self, seed):
         random.seed(seed)
         np.random.seed(seed)
@@ -130,14 +129,14 @@ class Simulator:
             self.save_distribution_heatmap(distribution_per_area)
         else:
             raise Exception(f'Partitioning {self.partitioning} not supported! Please check :)')
-        mapping_client_data = self.__map_client_to_data(mapping_area_clients, distribution_per_area)
+        mapping_client_data = self.__map_client_to_data(self.complete_dataset, mapping_area_clients, distribution_per_area)
         if self.algorithm == 'ifca':
             mapping = utils.hard_non_iid_mapping(self.areas, len(self.complete_dataset.classes))
             distribution_per_area = utils.partitioning(mapping, self.validation_data)
-            self.mapping_client_data_validation = self.__map_client_to_data(mapping_area_clients, distribution_per_area)
+            self.mapping_client_data_validation = self.__map_client_to_data(self.complete_dataset, mapping_area_clients, distribution_per_area)
         return mapping_client_data
 
-    def __map_client_to_data(self, mapping_area_clients, distribution_per_area):
+    def __map_client_to_data(self, dataset, mapping_area_clients, distribution_per_area):
         mapping_client_data = {}
         for area in mapping_area_clients.keys():
             clients = mapping_area_clients[area]
@@ -145,7 +144,7 @@ class Simulator:
             random.shuffle(indexes)
             split = np.array_split(indexes, len(clients))
             for i, c in enumerate(clients):
-                mapping_client_data[c] = Subset(self.complete_dataset, split[i])
+                mapping_client_data[c] = Subset(dataset, split[i])
         return mapping_client_data
 
     def test_global_model(self, validation = True):
@@ -158,15 +157,14 @@ class Simulator:
                 mapping_area_clients = {areaId: list(clients_split[areaId]) for areaId in range(self.areas)}
                 mapping = utils.hard_non_iid_mapping(self.areas, len(dataset.classes))
                 distribution_per_area = utils.partitioning(mapping, dataset, True)
-                mapping_client = self.__map_client_to_data(mapping_area_clients,distribution_per_area)
+                mapping_client = self.__map_client_to_data(dataset, mapping_area_clients, distribution_per_area)
 
             losses = []
             accuracies = []
             for index, client in enumerate(self.clients):
                 _, model = client.model
+    
                 client_loss, client_accuracy = utils.test_model(model, mapping_client[index], self.batch_size, self.device)
-                # if validation:
-                #     print(f'Validation ----> loss: {loss}   accuracy: {accuracy}')
                 losses.append(client_loss)
                 accuracies.append(client_accuracy)
             loss = sum(losses) / len(losses)
@@ -182,8 +180,6 @@ class Simulator:
             else:
                 dataset = self.get_dataset(False)
             loss, accuracy = utils.test_model(model, dataset, self.batch_size, self.device)
-            # if validation:
-            #     print(f'Validation ----> loss: {loss}   accuracy: {accuracy}')
             if not validation:
                 data = pd.DataFrame({'Loss': [loss], 'Accuracy': [accuracy]})
                 data.to_csv(f'{self.export_path}-test.csv', index=False)
@@ -224,7 +220,6 @@ class Simulator:
     def save_distribution_heatmap(self, distribution_per_area):
         matrix = []
         for k, indexes in distribution_per_area.items():
-            # print(f'Area {k} has {len(indexes)} images')
             v = [self.training_data.dataset.targets[index].item() for index in indexes]
             count = Counter(v)
             for i in range(len(self.training_data.dataset.classes)):

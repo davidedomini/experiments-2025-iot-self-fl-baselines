@@ -38,12 +38,9 @@ def iid_mapping(areas: int, labels: int) -> np.ndarray:
     return distribution
 
 def partitioning(distribution: np.ndarray, data: Subset, test = False) -> dict[int, list[int]]:
-    if test:
-        indices = list(range(len(data)))
-        targets = data.targets
-    else:
-        indices = data.indices
-        targets = data.dataset.targets
+    indices = list(range(len(data)))
+    targets = data.targets if test else data.dataset.targets
+
     class_counts = torch.bincount(targets[indices])
     class_to_indices = {}
     for index in indices:
