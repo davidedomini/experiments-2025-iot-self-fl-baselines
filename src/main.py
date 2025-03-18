@@ -41,7 +41,7 @@ if __name__ == '__main__':
     clients         = 50
     batch_size      = 32
     local_epochs    = 2
-    global_rounds   = 60
+    global_rounds   = 30
     max_seed        = 20
 
     data_output_directory = Path(data_dir)
