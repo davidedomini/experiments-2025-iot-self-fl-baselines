@@ -52,6 +52,12 @@ if __name__ == '__main__':
     # experiment_name = 'ifca'
     # hyperparams = {'areas' : [3, 5, 9]}
 
+    clusters = {
+        3 : [2, 5], 
+        5 : [2, 8],
+        9 : [3, 5, 12]
+    }
+
     print(hyperparams)
 
     # Experiments non-IID hard EMNIST
@@ -60,7 +66,8 @@ if __name__ == '__main__':
     for seed in range(max_seed):
         for dataset in ['EMNIST']:
             for area in areas:
-                print(f'starting hard seed {seed} experiment {experiment_name} dataset {dataset} area {area}')
-                simulator = Simulator(experiment_name, partitioning, area, dataset, clients, batch_size, local_epochs, data_dir, seed, number_of_clusters=area)
-                simulator.seed_everything(seed)
-                simulator.start(global_rounds)
+                for cls in clusters[area]: 
+                    # print(f'starting hard seed {seed} experiment {experiment_name} dataset {dataset} area {area}')
+                    simulator = Simulator(experiment_name, partitioning, area, dataset, clients, batch_size, local_epochs, data_dir, seed, number_of_clusters=cls)
+                    simulator.seed_everything(seed)
+                    simulator.start(global_rounds)
