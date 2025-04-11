@@ -31,6 +31,15 @@ def hard_non_iid_mapping(areas: int, labels: int) -> np.ndarray:
         distribution[rows, elems] = 1 / len(elems)
     return distribution
 
+def non_iid_mapping_validation(areas: int, labels: int) -> np.ndarray:
+    labels_set = np.arange(labels)
+    split_classes_per_area = np.array_split(labels_set, areas)
+    distribution = np.zeros((areas, labels))
+    for i, elems in enumerate(split_classes_per_area):
+        rows = [i for _ in elems]
+        distribution[rows, elems] = 1
+    return distribution
+
 def iid_mapping(areas: int, labels: int) -> np.ndarray:
     percentage = 1 / labels
     distribution = np.zeros((areas, labels))
@@ -40,15 +49,16 @@ def iid_mapping(areas: int, labels: int) -> np.ndarray:
 def partitioning(distribution: np.ndarray, data: Subset, test = False) -> dict[int, list[int]]:
     indices = list(range(len(data)))
     targets = data.targets if test else data.dataset.targets
+    class_to_indices = find_class_to_indices(targets, indices)
 
     class_counts = torch.bincount(targets[indices])
-    class_to_indices = {}
-    for index in indices:
-        c = targets[index].item()
-        if c in class_to_indices:
-            class_to_indices[c].append(index)
-        else:
-            class_to_indices[c] = [index]
+    # class_to_indices = {}
+    # for index in indices:
+    #     c = targets[index].item()
+    #     if c in class_to_indices:
+    #         class_to_indices[c].append(index)
+    #     else:
+    #         class_to_indices[c] = [index]
 
     areas = distribution.shape[0]
     targets_cardinality = distribution.shape[1]
@@ -62,6 +72,16 @@ def partitioning(distribution: np.ndarray, data: Subset, test = False) -> dict[i
             selected_indices = random.sample(class_to_indices[c], elements)
             partitions[area].extend(selected_indices)
     return partitions
+
+def find_class_to_indices(targets, indices) -> dict[int, list[int]]:
+    class_to_indices = {}
+    for index in indices:
+        c = targets[index].item()
+        if c in class_to_indices:
+            class_to_indices[c].append(index)
+        else:
+            class_to_indices[c] = [index]
+    return class_to_indices
 
 def dirichlet_partitioning(data: Subset, areas: int, beta: float) -> dict[int, list[int]]:
     # Implemented as in: https://proceedings.mlr.press/v97/yurochkin19a.html

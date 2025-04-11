@@ -11,6 +11,8 @@ class IFCAClient:
         self.lr = 0.001
         self.epochs = epochs
         self.dataset = dataset
+        # labels = [self.dataset[idx][1] for idx in range(len(self.dataset))]
+        # print(f'Client {self.mid} --> training set size {len(self.dataset)} classes {set(labels)}')
         self._global_models = []
         self.weight_decay = 1e-4
         self.current_cluster_id = 0
