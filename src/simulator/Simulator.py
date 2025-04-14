@@ -136,34 +136,9 @@ class Simulator:
         mapping_client_data = self.__map_client_to_data(self.complete_dataset, mapping_area_clients, distribution_per_area)
 
         if self.algorithm == 'ifca':
-            mapping = utils.non_iid_mapping_validation(self.number_of_clusters, len(self.complete_dataset.classes))
+            # mapping = utils.non_iid_mapping_validation(self.number_of_clusters, len(self.complete_dataset.classes))
+            mapping = utils.non_iid_mapping_validation(self.areas, len(self.complete_dataset.classes))
             self.__validation_distribution_per_area = utils.partitioning(mapping, self.validation_data)
-            # print('Client split for validation')
-            # clients_split_validation = np.array_split(list(range(self.n_clients)), self.number_of_clusters)
-            # print(clients_split_validation)
-            # mapping_area_clients_validation = { cluster_id: list(clients_split_validation[cluster_id]) for cluster_id in range(self.number_of_clusters) }
-            # self.mapping_client_data_validation = self.__map_client_to_data(self.complete_dataset, mapping_area_clients_validation, distribution_per_area)
-        #     classes_split = np.array_split(list(range(len(self.complete_dataset.classes))), self.number_of_clusters)
-        #     print('----------------------------------------------------------------------------------')
-        #     print(classes_split)
-        #     print('----------------------------------------------------------------------------------')
-        #     clients_split_validation = np.array_split(list(range(self.n_clients)), self.number_of_clusters)
-        #     indices = list(range(len(self.validation_data)))
-        #     targets = self.validation_data.dataset.targets
-        #     class_to_indices = utils.find_class_to_indices(targets, indices)
-        #     # for cl, indices in class_to_indices.items():
-        #     #    print(f'Class {cl} has {len(indices)} samples')
-        #     # print('----------------------------------------------------------------------------------')
-        #     cluster_to_classes = {cl : [] for cl in range(self.number_of_clusters)}
-        #     for classes in classes_split:
-        #         for cl in classes:
-        #             print('porcodio {type(cl)}')
-        #             cl = int(cl)
-        #             print(cl)
-        #             print(class_to_indices[cl])
-        #             cluster_to_classes[cl].append(class_to_indices[cl])
-        #     for cl, indices in cluster_to_classes.items():
-        #         print(f'Cluster {cl} has {len(indices)} samples')
         return mapping_client_data
 
     def __map_client_to_data(self, dataset, mapping_area_clients, distribution_per_area):
@@ -183,12 +158,7 @@ class Simulator:
                 validation_distribution = self.__validation_distribution_per_area
             else:
                 dataset = self.get_dataset(False)
-                # clients_split = np.array_split(list(range(self.n_clients)), self.areas)
-                # mapping_area_clients = {areaId: list(clients_split[areaId]) for areaId in range(self.areas)}
-                # mapping = utils.hard_non_iid_mapping(self.areas, len(dataset.classes))
-                # distribution_per_area = utils.partitioning(mapping, dataset, True)
-                # mapping_client = self.__map_client_to_data(dataset, mapping_area_clients, distribution_per_area)
-                mapping = utils.non_iid_mapping_validation(self.number_of_clusters, len(dataset.classes))
+                mapping = utils.non_iid_mapping_validation(self.areas, len(dataset.classes))
                 validation_distribution = utils.partitioning(mapping, dataset, True)
 
             losses = []
@@ -199,12 +169,6 @@ class Simulator:
                 loss, accuracy = utils.test_model(model, val_dataset, self.batch_size, self.device)
                 losses.append(loss)
                 accuracies.append(accuracy)
-            # for index, client in enumerate(self.clients):
-            #     _, model = client.model
-    
-            #     client_loss, client_accuracy = utils.test_model(model, mapping_client[index], self.batch_size, self.device)
-            #     losses.append(client_loss)
-            #     accuracies.append(client_accuracy)
             loss = sum(losses) / len(losses)
             accuracy = sum(accuracies) / len(accuracies)
             if not validation:
