@@ -49,13 +49,13 @@ if __name__ == '__main__':
 
     experiment_name, hyperparams = get_hyperparameters()
     #
-    experiment_name = 'ifca'
+    # experiment_name = 'ifca'
     # experiment_name = 'fedavg'
     # hyperparams = {'areas' : [3, 5, 9]}
 
     clusters = {
         3 : [2, 5], 
-        5 : [2, 8],
+        5 : [1, 2, 8],
         9 : [3, 5, 12]
     }
 
