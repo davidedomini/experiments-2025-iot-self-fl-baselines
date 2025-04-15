@@ -41,7 +41,7 @@ if __name__ == '__main__':
     clients         = 50
     batch_size      = 32
     local_epochs    = 2
-    global_rounds   = 30
+    global_rounds   = 2
     max_seed        = 20
 
     data_output_directory = Path(data_dir)
@@ -54,9 +54,9 @@ if __name__ == '__main__':
     # hyperparams = {'areas' : [3, 5, 9]}
 
     clusters = {
-        3 : [2, 5], 
-        5 : [1, 2, 8],
-        9 : [3, 5, 12]
+        3 : [1, 2], 
+        5 : [1, 2, 3],
+        9 : [1, 3, 5, 7]
     }
 
     # Experiments non-IID hard EMNIST
@@ -65,7 +65,7 @@ if __name__ == '__main__':
     for seed in range(max_seed):
         for dataset in ['EMNIST']:
             for area in areas:
-            # for area in [5]:
+            # for area in [9]:
                 for cls in clusters[area]: 
                     print(f'starting hard seed {seed} experiment {experiment_name} dataset {dataset} area {area} clusters: {cls}')
                     simulator = Simulator(experiment_name, partitioning, area, dataset, clients, batch_size, local_epochs, data_dir, seed, number_of_clusters=cls)
