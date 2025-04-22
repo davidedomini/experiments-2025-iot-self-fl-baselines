@@ -22,31 +22,31 @@ services:
 #        scaffold:
 #          areas: [3, 5, 9]
 
-  experiment-ifca-areas-3:
-    hostname: ifca-areas-3
-    image: davidedomini99/experiments-2025-iot-self-fl:1.0.13
-    volumes:
-      - davide.domini-volume:/data
-    environment:
-      DATA_OWNER: 1000:1000
-      LEARNING_HYPERPARAMETERS: |
-        ifca: 
-          areas: [3]
+  # experiment-ifca-areas-3:
+  #   hostname: ifca-areas-3
+  #   image: davidedomini99/experiments-2025-iot-self-fl:1.0.13
+  #   volumes:
+  #     - davide.domini-volume:/data
+  #   environment:
+  #     DATA_OWNER: 1000:1000
+  #     LEARNING_HYPERPARAMETERS: |
+  #       ifca: 
+  #         areas: [3]
 
-  experiment-ifca-areas-5:
-    hostname: ifca-areas-5
-    image: davidedomini99/experiments-2025-iot-self-fl:1.0.13
-    volumes:
-      - davide.domini-volume:/data
-    environment:
-      DATA_OWNER: 1000:1000
-      LEARNING_HYPERPARAMETERS: |
-        ifca: 
-          areas: [5]
+  # experiment-ifca-areas-5:
+  #   hostname: ifca-areas-5
+  #   image: davidedomini99/experiments-2025-iot-self-fl:1.0.13
+  #   volumes:
+  #     - davide.domini-volume:/data
+  #   environment:
+  #     DATA_OWNER: 1000:1000
+  #     LEARNING_HYPERPARAMETERS: |
+  #       ifca: 
+  #         areas: [5]
           
   experiment-ifca-areas-9:
     hostname: ifca-areas-9
-    image: davidedomini99/experiments-2025-iot-self-fl:1.0.13
+    image: davidedomini99/experiments-2025-iot-self-fl:1.0.14
     volumes:
       - davide.domini-volume:/data
     environment:
