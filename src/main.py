@@ -56,7 +56,8 @@ if __name__ == '__main__':
     clusters = {
         3 : [1, 2], 
         5 : [1, 2, 3],
-        9 : [1, 3, 5, 7]
+        # 9 : [1, 3, 5, 7]
+        9: [2]
     }
 
     # Experiments non-IID hard EMNIST
