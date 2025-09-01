@@ -6,6 +6,7 @@ import pandas as pd
 from pathlib import Path
 from hashlib import sha512
 from itertools import product
+from datetime import datetime
 from simulator.Simulator import Simulator
 
 def get_hyperparameters():
@@ -36,39 +37,53 @@ def check_hyperparameters(hyperparams):
 
 if __name__ == '__main__':
 
-    data_dir        = Path(os.getenv('DATA_DIR', './data'))
-    datasets        = ['EMNIST']
+    data_dir        = 'data'
+    datasets        = ['CIFAR100']
     clients         = 50
     batch_size      = 32
     local_epochs    = 2
-    global_rounds   = 30
+    global_rounds   = 60
     max_seed        = 20
 
     data_output_directory = Path(data_dir)
     data_output_directory.mkdir(parents=True, exist_ok=True)
 
     experiment_name, hyperparams = get_hyperparameters()
-    #
-    # experiment_name = 'ifca'
-    # experiment_name = 'fedavg'
-    # hyperparams = {'areas' : [3, 5, 9]}
-
-    clusters = {
-        3 : [1, 2], 
-        5 : [1, 2, 3],
-        # 9 : [1, 3, 5, 7]
-        9: [2]
-    }
-
-    # Experiments non-IID hard EMNIST
-    partitioning = 'hard'
     areas = hyperparams['areas']
+
+    a = 3
+
+    if a == 0:
+        algorithm = 'fedavg'
+    elif a == 1:
+        algorithm = 'fedproxy'
+    elif a == 2:
+        algorithm = 'scaffold'
+    elif a == 3:
+        algorithm = 'ifca'
+    else:
+        algorithm = 'Unknown'
+
+    csv_file = f'finished_experiment_log.csv'
+
+    df = pd.DataFrame(columns=['timestamp', 'experiment'])
+
+    try:
+        df = pd.read_csv(csv_file)
+    except FileNotFoundError:
+        pass
+
+    partitioning = 'Hard'
+    #areas = [3, 5, 9]
+    iid_start = time.time()
     for seed in range(max_seed):
-        for dataset in ['EMNIST']:
+        for dataset in datasets:
             for area in areas:
-            # for area in [9]:
-                for cls in clusters[area]: 
-                    print(f'starting hard seed {seed} experiment {experiment_name} dataset {dataset} area {area} clusters: {cls}')
-                    simulator = Simulator(experiment_name, partitioning, area, dataset, clients, batch_size, local_epochs, data_dir, seed, number_of_clusters=cls)
-                    simulator.seed_everything(seed)
-                    simulator.start(global_rounds)
+                simulator = Simulator(algorithm, partitioning, area, dataset, clients, batch_size, local_epochs, data_dir, seed)
+                simulator.seed_everything(seed)
+                simulator.start(global_rounds)
+                experiment_name = f'seed-{seed}_regions-{area}_algorithm_{algorithm}'
+                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                new_line = {'timestamp': timestamp, 'experiment': experiment_name}
+                df = pd.concat([df, pd.DataFrame([new_line])], ignore_index=True)
+                df.to_csv(csv_file, index=False)

@@ -4,8 +4,9 @@ import torch
 import numpy as np
 import torch.nn as nn
 import seaborn as sns
-from models.MNIST import NNMnist
 import matplotlib.pyplot as plt
+from models.MNIST import NNMnist
+from torchvision.models import mobilenet_v2
 from torch.utils.data import Dataset, Subset, DataLoader
 
 def initialize_model(name):
@@ -13,6 +14,14 @@ def initialize_model(name):
         return NNMnist()
     elif name == 'EMNIST':
         return NNMnist(output_size=27)
+    elif name == 'CIFAR100':
+        model = mobilenet_v2(pretrained=True)
+        in_features = model.classifier[1].in_features
+        model.classifier = nn.Sequential(
+            nn.Dropout(p=0.2),
+            nn.Linear(in_features, 100)
+        )
+        return model
     else:
         raise Exception(f'Model {name} not implemented! Please check :)')
 
