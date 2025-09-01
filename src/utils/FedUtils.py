@@ -58,9 +58,13 @@ def iid_mapping(areas: int, labels: int) -> np.ndarray:
 def partitioning(distribution: np.ndarray, data: Subset, test = False) -> dict[int, list[int]]:
     indices = list(range(len(data)))
     targets = data.targets if test else data.dataset.targets
+    if not isinstance(targets, torch.Tensor):
+        targets = torch.tensor(targets)
     class_to_indices = find_class_to_indices(targets, indices)
 
+    print(type(targets))
     class_counts = torch.bincount(targets[indices])
+    print('diocane')
     # class_to_indices = {}
     # for index in indices:
     #     c = targets[index].item()
@@ -85,7 +89,11 @@ def partitioning(distribution: np.ndarray, data: Subset, test = False) -> dict[i
 def find_class_to_indices(targets, indices) -> dict[int, list[int]]:
     class_to_indices = {}
     for index in indices:
-        c = targets[index].item()
+        target = targets[index]
+        if not isinstance(target, int):
+            c = target.item()
+        else: 
+            c = target 
         if c in class_to_indices:
             class_to_indices[c].append(index)
         else:

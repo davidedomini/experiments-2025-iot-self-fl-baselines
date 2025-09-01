@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     experiment_name, hyperparams = get_hyperparameters()
     areas = hyperparams['areas']
-
+    # areas = [3]
     a = 3
 
     if a == 0:
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     for seed in range(max_seed):
         for dataset in datasets:
             for area in areas:
-                simulator = Simulator(algorithm, partitioning, area, dataset, clients, batch_size, local_epochs, data_dir, seed)
+                simulator = Simulator(algorithm, partitioning, area, dataset, clients, batch_size, local_epochs, data_dir, seed, number_of_clusters=area)
                 simulator.seed_everything(seed)
                 simulator.start(global_rounds)
                 experiment_name = f'seed-{seed}_regions-{area}_algorithm_{algorithm}'
