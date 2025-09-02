@@ -27,7 +27,7 @@ class IFCAClient:
         self._model.load_state_dict(self._global_models[self.current_cluster_id].state_dict())
         train_loader = DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True)
         optimizer = torch.optim.Adam(self._model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
-        loss_func = nn.CrossEntropyLoss()
+        loss_func = nn.NLLLoss()
         losses = []
         self._model.to(self.device)
         for _ in range(self.epochs):

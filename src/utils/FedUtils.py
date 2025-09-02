@@ -19,7 +19,8 @@ def initialize_model(name):
         in_features = model.classifier[1].in_features
         model.classifier = nn.Sequential(
             nn.Dropout(p=0.2),
-            nn.Linear(in_features, 100)
+            nn.Linear(in_features, 100),
+            nn.LogSoftmax(dim=1)
         )
         return model
     else:
@@ -62,9 +63,7 @@ def partitioning(distribution: np.ndarray, data: Subset, test = False) -> dict[i
         targets = torch.tensor(targets)
     class_to_indices = find_class_to_indices(targets, indices)
 
-    print(type(targets))
     class_counts = torch.bincount(targets[indices])
-    print('diocane')
     # class_to_indices = {}
     # for index in indices:
     #     c = targets[index].item()
