@@ -49,7 +49,7 @@ if __name__ == '__main__':
     data_output_directory.mkdir(parents=True, exist_ok=True)
 
     experiment_name, hyperparams = get_hyperparameters()
-    a = hyperparams['algorithm']
+    a = hyperparams['algorithm'][0]
     areas = [3, 5, 9]
     # a = 3
 
