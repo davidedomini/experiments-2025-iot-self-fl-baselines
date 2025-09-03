@@ -25,6 +25,7 @@ class Simulator:
         self.complete_dataset, self.training_data, self.validation_data = self.initialize_data()
         self.partitioning = partitioning
         self.algorithm = algorithm
+        print(f'SIMULATOOOOOOOOOR ----> {self.algorithm}')
         self.areas = areas
         self.n_clients = n_clients
         if self.algorithm == 'ifca':
