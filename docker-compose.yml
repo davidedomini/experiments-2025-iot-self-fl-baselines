@@ -2,7 +2,7 @@ services:
 
 #  experiment-fedavg:
 #    hostname: fedavg
-#    image: davidedomini99/experiments-2025-iot-cifar:1.0.2
+#    image: davidedomini99/experiments-2025-iot-cifar:1.0.8
 #    volumes:
 #      - davide.domini-volume:/experiment/data
 #    environment:
@@ -13,7 +13,7 @@ services:
 #
 #  experiment-fedprox:
 #    hostname: fedprox
-#    image: davidedomini99/experiments-2025-iot-cifar:1.0.2
+#    image: davidedomini99/experiments-2025-iot-cifar:1.0.8
 #    volumes:
 #      - davide.domini-volume:/experiment/data
 #    environment:
@@ -24,7 +24,7 @@ services:
 #
 #  experiment-scaffold:
 #    hostname: scaffold
-#    image: davidedomini99/experiments-2025-iot-cifar:1.0.3
+#    image: davidedomini99/experiments-2025-iot-cifar:1.0.8
 #    volumes:
 #      - davide.domini-volume:/experiment/data
 #    environment:
@@ -35,7 +35,7 @@ services:
 
   experiment-ifca-a3:
     hostname: ifca-a3
-    image: davidedomini99/experiments-2025-iot-cifar:1.0.7
+    image: davidedomini99/experiments-2025-iot-cifar:1.0.8
     volumes:
       - davide.domini-volume:/experiment/data
     environment:
@@ -46,7 +46,7 @@ services:
 
   experiment-ifca-a5:
     hostname: ifca-a5
-    image: davidedomini99/experiments-2025-iot-cifar:1.0.7
+    image: davidedomini99/experiments-2025-iot-cifar:1.0.8
     volumes:
       - davide.domini-volume:/experiment/data
     environment:
@@ -57,7 +57,7 @@ services:
 
   experiment-ifca-a9:
     hostname: ifca-a9
-    image: davidedomini99/experiments-2025-iot-cifar:1.0.7
+    image: davidedomini99/experiments-2025-iot-cifar:1.0.8
     volumes:
       - davide.domini-volume:/experiment/data
     environment:
