@@ -21,7 +21,7 @@ class FedAvgClient:
         print(f'Client {self.mid} --> training set size {len(self.training_set)} classes {set(labels)}')
         train_loader = DataLoader(self.training_set, batch_size=self.batch_size, shuffle=True)
         optimizer = torch.optim.Adam(self._model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
-        loss_func = nn.CrossEntropyLoss()
+        loss_func = nn.NLLLoss()
         losses = []
         self.model.to(self.device)
         for epoch in range(self.epochs):

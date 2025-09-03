@@ -28,7 +28,7 @@ class ScaffoldClient:
         optimizer = torch.optim.Adam(self._model.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         ccs_dict = self._client_control_state
         scs_dict = self.server_control_state
-        loss_func = nn.CrossEntropyLoss()
+        loss_func = nn.NLLLoss()
         losses = []
         tau = 0
         self._model.to(self.device)
