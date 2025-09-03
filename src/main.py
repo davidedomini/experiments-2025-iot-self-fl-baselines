@@ -49,9 +49,9 @@ if __name__ == '__main__':
     data_output_directory.mkdir(parents=True, exist_ok=True)
 
     experiment_name, hyperparams = get_hyperparameters()
-    areas = hyperparams['areas']
-    # areas = [3]
-    a = 3
+    a = hyperparams['algorithm']
+    areas = [3, 5, 9]
+    # a = 3
 
     if a == 0:
         algorithm = 'fedavg'
