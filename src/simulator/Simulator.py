@@ -163,9 +163,15 @@ class Simulator:
 
             losses = []
             accuracies = []
-            models = self.server.model
-            for i, model in enumerate(models):
-                val_dataset = Subset(self.complete_dataset, validation_distribution[i])
+            # models = self.server.model
+            # for i, model in enumerate(models):
+            #     val_dataset = Subset(self.complete_dataset, validation_distribution[i])
+            #     loss, accuracy = utils.test_model(model, val_dataset, self.batch_size, self.device)
+            #     losses.append(loss)
+            #     accuracies.append(accuracy)
+            for c in self.clients:
+                cluster_id, model = c.model
+                val_dataset = Subset(self.complete_dataset, validation_distribution[cluster_id])
                 loss, accuracy = utils.test_model(model, val_dataset, self.batch_size, self.device)
                 losses.append(loss)
                 accuracies.append(accuracy)
